@@ -10,7 +10,7 @@ const HealthcareAssistant = forwardRef(({ onMessageCountUpdate }, ref) => {
   const messagesContainerRef = useRef(null);
   const recognitionRef = useRef(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const API_KEY = "[REDACTED]";
+  const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
   const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
   // Symptom tracking state
@@ -140,7 +140,7 @@ Provide your next question or guidance.`;
 
   const handleSymptomTracking = (userText, aiResponse) => {
     const lowerText = userText.toLowerCase();
-    
+
     // Age tracking
     if (!symptomTracker.age) {
       const ageMatch = lowerText.match(/(\d+)\s*years?\s*old/);
@@ -160,8 +160,8 @@ Provide your next question or guidance.`;
 
     // Symptoms tracking
     const symptomKeywords = [
-      'fever', 'cough', 'headache', 'pain', 'fatigue', 
-      'sore throat', 'congestion', 'nausea', 'vomiting', 
+      'fever', 'cough', 'headache', 'pain', 'fatigue',
+      'sore throat', 'congestion', 'nausea', 'vomiting',
       'diarrhea', 'muscle ache', 'chills', 'body ache'
     ];
 
@@ -193,8 +193,8 @@ Provide your next question or guidance.`;
     Object.entries(durationKeywords).forEach(([keyword, days]) => {
       const durationMatch = lowerText.match(new RegExp(`(\\d+)\\s*${keyword}`));
       if (durationMatch) {
-        setSymptomTracker(prev => ({ 
-          ...prev, 
+        setSymptomTracker(prev => ({
+          ...prev,
           duration: `${durationMatch[1]} ${keyword}`
         }));
       }
@@ -206,10 +206,10 @@ Provide your next question or guidance.`;
     const conversationHistory = updatedMessages
       .map(msg => `${msg.sender === "ai" ? "Healthcare Assistant" : "Patient"}: ${msg.text}`)
       .join("\n");
-    
+
     // Track symptoms before generating response
     handleSymptomTracking(userText, "");
-    
+
     const aiResponse = await generateAIResponse(conversationHistory);
     setMessages([...updatedMessages, { sender: "ai", text: aiResponse }]);
     setIsTyping(false);
@@ -254,8 +254,8 @@ Provide your next question or guidance.`;
           Questions: {Math.floor(messages.length / 2)}
         </div>
       </div>
-      
-      <div 
+
+      <div
         ref={messagesContainerRef}
         className="flex-grow overflow-y-auto p-4 bg-[#1e1e1e]"
         style={{ maxHeight: "calc(100% - 130px)" }}
@@ -319,7 +319,7 @@ Provide your next question or guidance.`;
               className="flex-grow p-3 border border-gray-700 bg-[#2a2a2a] text-white focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-l"
               placeholder="Describe your symptoms or use speech buttons..."
             />
-            <button 
+            <button
               type="submit"
               className="bg-blue-600 text-white px-6 py-3 rounded-r hover:bg-blue-700 transition duration-300 focus:outline-none"
             >
